@@ -10,7 +10,7 @@ export class GameComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    
+    gameLoop();
   }
 
 }
@@ -20,6 +20,7 @@ var ctx: CanvasRenderingContext2D;
 var com = new Image(); com.src = "assets/comed.jpg";
 var water = new Image(); water.src = "assets/water.png";
 var background = new Image(); background.src ="assets/road.png";
+
 
 function gameLoop(){
   draw();
@@ -42,6 +43,7 @@ class myFrog{
   width: number = 30;
   height: number = 30;
   isDead: boolean = false;
+  deadtime: number = 50;
 }
 
 // frog 
@@ -70,13 +72,13 @@ class theCar{
   carSX:number[] = [0, 60, 120, 180, 0, 180, 60, 120]; 
   carY:number[] = [398, 398, 353, 308, 263, 353, 308, 263];
 
-  lane1:number = 4;
+  lane1:number = 6;
   lane1LTR:boolean = true;
-  lane2:number = 3;
+  lane2:number = 5;
   lane2LTR:boolean = true;
-  lane3:number = 5;
+  lane3:number = 3;
   lane3LTR:boolean = false;
-  lane4:number = 6;
+  lane4:number = 4;
   lane4LTR:boolean = false;
 
 }
@@ -122,12 +124,14 @@ document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
 function keyDownHandler(e){
+  if(frog.isDead){
+    return;
+  }
   if(e.keyCode == 39){move.rightPressed = true;}
   if(e.keyCode == 37){move.leftPressed = true;}
   if(e.keyCode == 38){move.upPressed = true;}
   if(e.keyCode == 40){move.downPressed = true;}
 }
-
 function keyUpHandler(e){
   if(e.keyCode == 39){move.rightPressed = false;}
   if(e.keyCode == 37){move.leftPressed = false;}
@@ -174,7 +178,13 @@ function drawBackground(){
 }
 
 function drawFrog(){
-  ctx.drawImage(frogi, frog.sx, frog.sy, frog.swidth, frog.sheight, frog.xCoord, frog.yCoord, frog.width, frog.height);
+  if(frog.isDead){
+    ctx.drawImage(frogi, 120, frog.sy, frog.swidth, frog.sheight, frog.xCoord, frog.yCoord, frog.width, frog.height);
+  }
+  else{
+    ctx.drawImage(frogi, frog.sx, frog.sy, frog.swidth, frog.sheight, frog.xCoord, frog.yCoord, frog.width, frog.height);
+  }
+  
 }
 
 function moveFrog(){
@@ -348,15 +358,17 @@ function runOver(){
   var carsX = [myCar.carX[0], myCar.carX[1], myCar.carX[2], myCar.carX[3], myCar.carX[4], myCar.carX[5], myCar.carX[6], myCar.carX[7]];
   var carsY = [myCar.carY[0], myCar.carY[1], myCar.carY[2], myCar.carY[3], myCar.carY[4], myCar.carY[5], myCar.carY[6], myCar.carY[7]];
 
-  for(var i = 0; i < carsX.length; i++){
-    if(carsX[i] <= frog.xCoord + frog.width &&
-      carsX[i] + myCar.carWidth >= frog.xCoord &&
-      carsY[i] + myCar.carHeight >= frog.yCoord &&
-      carsY[i] <= frog.yCoord + frog.height){
-        frog.isDead = true;
-        livesLost ++;
-        frog.yCoord = 444;
-      }
+  if(!frog.isDead){
+    for(var i = 0; i < carsX.length; i++){
+      if(carsX[i] <= frog.xCoord + frog.width &&
+        carsX[i] + myCar.carWidth >= frog.xCoord &&
+        carsY[i] + myCar.carHeight >= frog.yCoord &&
+        carsY[i] <= frog.yCoord + frog.height){
+          
+          frog.isDead = true;
+          livesLost ++;
+        }
+    }
   }
 }
 
@@ -427,74 +439,76 @@ function moveLogs(){
 }
 
 function float(){
-  if(frog.yCoord < 200){
-    if(myLog.logX[0] <= frog.xCoord + frog.width &&
-      myLog.logX[0] + myLog.logWidth >= frog.xCoord &&
-      myLog.logY[0] + myLog.logHeight >= frog.yCoord &&
-      myLog.logY[0] <= frog.yCoord + frog.height){
-        if(frog.xCoord < canvas.width - 30){
-          frog.xCoord = frog.xCoord + myLog.logSpeed;
+  if(!frog.isDead){
+    if(frog.yCoord < 200){
+      if(myLog.logX[0] <= frog.xCoord + frog.width &&
+        myLog.logX[0] + myLog.logWidth >= frog.xCoord &&
+        myLog.logY[0] + myLog.logHeight >= frog.yCoord &&
+        myLog.logY[0] <= frog.yCoord + frog.height){
+          if(frog.xCoord < canvas.width - 30){
+            frog.xCoord = frog.xCoord + myLog.logSpeed;
+          }
         }
+      else if(myLog.logX[1] <= frog.xCoord + frog.width &&
+              myLog.logX[1] + myLog.logWidth >= frog.xCoord &&
+              myLog.logY[1] + myLog.logHeight >= frog.yCoord &&
+              myLog.logY[1] <= frog.yCoord + frog.height){
+                if(frog.xCoord < canvas.width - 30){
+                  frog.xCoord = frog.xCoord + myLog.logSpeed;
+                }
+              }
+      else if(myLog.logX[2] <= frog.xCoord + frog.width &&
+              myLog.logX[2] + myLog.logWidth >= frog.xCoord &&
+              myLog.logY[2] + myLog.logHeight >= frog.yCoord &&
+              myLog.logY[2] <= frog.yCoord + frog.height){
+                if(frog.xCoord > 0){
+                    frog.xCoord = frog.xCoord - myLog.logSpeed;
+                  }
+                }
+      else if(myLog.logX[3] <= frog.xCoord + frog.width &&
+                myLog.logX[3] + myLog.logWidth >= frog.xCoord &&
+                myLog.logY[3] + myLog.logHeight >= frog.yCoord &&
+                myLog.logY[3] <= frog.yCoord + frog.height){
+                  if(frog.xCoord > 0){
+                      frog.xCoord = frog.xCoord - myLog.logSpeed;
+                    }
+                  }
+      else if(myLog.logX[4] <= frog.xCoord + frog.width &&
+                myLog.logX[4] + myLog.logWidth >= frog.xCoord &&
+                myLog.logY[4] + myLog.logHeight >= frog.yCoord &&
+                myLog.logY[4] <= frog.yCoord + frog.height){
+                  if(frog.xCoord < canvas.width - 30){
+                      frog.xCoord = frog.xCoord + myLog.logSpeed;
+                    }
+                  }
+      else if(myLog.logX[5] <= frog.xCoord + frog.width &&
+                myLog.logX[5] + myLog.logWidth >= frog.xCoord &&
+                myLog.logY[5] + myLog.logHeight >= frog.yCoord &&
+                myLog.logY[5] <= frog.yCoord + frog.height){
+                  if(frog.xCoord < canvas.width - 30){
+                      frog.xCoord = frog.xCoord + myLog.logSpeed;
+                    }
+                  }
+      else if(myLog.logX[6] <= frog.xCoord + frog.width &&
+                myLog.logX[6] + myLog.logWidth >= frog.xCoord &&
+                myLog.logY[6] + myLog.logHeight >= frog.yCoord &&
+                myLog.logY[6] <= frog.yCoord + frog.height){
+                  if(frog.xCoord > 0){
+                      frog.xCoord = frog.xCoord - myLog.logSpeed;
+                    }
+                  }
+      else if(myLog.logX[7] <= frog.xCoord + frog.width &&
+                myLog.logX[7] + myLog.logWidth >= frog.xCoord &&
+                myLog.logY[7] + myLog.logHeight >= frog.yCoord &&
+                myLog.logY[7] <= frog.yCoord + frog.height){
+                  if(frog.xCoord > 0){
+                      frog.xCoord = frog.xCoord - myLog.logSpeed;
+                    }
+                  }
+      else if (frog.yCoord < 220 && frog.yCoord > 44){
+      frog.isDead = true; 
+      livesLost ++;
       }
-    else if(myLog.logX[1] <= frog.xCoord + frog.width &&
-            myLog.logX[1] + myLog.logWidth >= frog.xCoord &&
-            myLog.logY[1] + myLog.logHeight >= frog.yCoord &&
-            myLog.logY[1] <= frog.yCoord + frog.height){
-              if(frog.xCoord < canvas.width - 30){
-                frog.xCoord = frog.xCoord + myLog.logSpeed;
-              }
-            }
-    else if(myLog.logX[2] <= frog.xCoord + frog.width &&
-            myLog.logX[2] + myLog.logWidth >= frog.xCoord &&
-            myLog.logY[2] + myLog.logHeight >= frog.yCoord &&
-            myLog.logY[2] <= frog.yCoord + frog.height){
-              if(frog.xCoord > 0){
-                  frog.xCoord = frog.xCoord - myLog.logSpeed;
-                }
-              }
-    else if(myLog.logX[3] <= frog.xCoord + frog.width &&
-              myLog.logX[3] + myLog.logWidth >= frog.xCoord &&
-              myLog.logY[3] + myLog.logHeight >= frog.yCoord &&
-              myLog.logY[3] <= frog.yCoord + frog.height){
-                if(frog.xCoord > 0){
-                    frog.xCoord = frog.xCoord - myLog.logSpeed;
-                  }
-                }
-    else if(myLog.logX[4] <= frog.xCoord + frog.width &&
-              myLog.logX[4] + myLog.logWidth >= frog.xCoord &&
-              myLog.logY[4] + myLog.logHeight >= frog.yCoord &&
-              myLog.logY[4] <= frog.yCoord + frog.height){
-                if(frog.xCoord < canvas.width - 30){
-                    frog.xCoord = frog.xCoord + myLog.logSpeed;
-                  }
-                }
-    else if(myLog.logX[5] <= frog.xCoord + frog.width &&
-              myLog.logX[5] + myLog.logWidth >= frog.xCoord &&
-              myLog.logY[5] + myLog.logHeight >= frog.yCoord &&
-              myLog.logY[5] <= frog.yCoord + frog.height){
-                if(frog.xCoord < canvas.width - 30){
-                    frog.xCoord = frog.xCoord + myLog.logSpeed;
-                  }
-                }
-    else if(myLog.logX[6] <= frog.xCoord + frog.width &&
-              myLog.logX[6] + myLog.logWidth >= frog.xCoord &&
-              myLog.logY[6] + myLog.logHeight >= frog.yCoord &&
-              myLog.logY[6] <= frog.yCoord + frog.height){
-                if(frog.xCoord > 0){
-                    frog.xCoord = frog.xCoord - myLog.logSpeed;
-                  }
-                }
-    else if(myLog.logX[7] <= frog.xCoord + frog.width &&
-              myLog.logX[7] + myLog.logWidth >= frog.xCoord &&
-              myLog.logY[7] + myLog.logHeight >= frog.yCoord &&
-              myLog.logY[7] <= frog.yCoord + frog.height){
-                if(frog.xCoord > 0){
-                    frog.xCoord = frog.xCoord - myLog.logSpeed;
-                  }
-                }
-    else if (frog.yCoord < 220 && frog.yCoord > 44){
-    frog.yCoord=444;
-    livesLost ++;
     }
   }
 }
@@ -574,6 +588,7 @@ function drawLives(){
 
 function victory (){
   if(myPad.padS[0] && myPad.padS[1] && myPad.padS[2] && myPad.padS[3] && myPad.padS[4] && myPad.padS[5]){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "white";
     ctx.font = "40px Arial";
     ctx.fillText("CONGRATS, UR NOT IDIOT!",30, 250);
@@ -600,6 +615,7 @@ function draw(){
  
 
   if(victoryCondition == false){
+    
     gameOver();
     drawLives();
   }
@@ -608,13 +624,19 @@ function draw(){
     
     drawBackground();
     drawLives();
-    if(frog.isDead){
-      ctx.drawImage(frogi, frog.sx, frog.sy, frog.swidth, frog.sheight, frog.xCoord, frog.yCoord, frog.width, frog.height);
-    }
     drawLogs();
     moveLogs();
     drawPads();
     onPad();
+    if(frog.isDead){
+      frog.deadtime--;
+    }
+    if(frog.deadtime == 0){
+      frog.isDead = false;
+      frog.deadtime = 50;
+      frog.sx = 0;
+      frog.yCoord = 444;
+    }
     if(!victoryCondition){
       drawFrog();
     }
@@ -628,4 +650,16 @@ function draw(){
 
   window.requestAnimationFrame(draw);
 }
+
+function pause(numberMillis){
+  var now = new Date();
+  var exitTime = now.getTime() + numberMillis;
+  while(true){
+    now = new Date();
+    if(now.getTime() > exitTime)
+      return;
+  }
+}
+
+
     
