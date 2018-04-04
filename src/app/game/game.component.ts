@@ -132,6 +132,7 @@ function keyDownHandler(e){
   if(e.keyCode == 38){move.upPressed = true;}
   if(e.keyCode == 40){move.downPressed = true;}
 }
+
 function keyUpHandler(e){
   if(e.keyCode == 39){move.rightPressed = false;}
   if(e.keyCode == 37){move.leftPressed = false;}
@@ -184,7 +185,6 @@ function drawFrog(){
   else{
     ctx.drawImage(frogi, frog.sx, frog.sy, frog.swidth, frog.sheight, frog.xCoord, frog.yCoord, frog.width, frog.height);
   }
-  
 }
 
 function moveFrog(){
@@ -607,6 +607,16 @@ function gameOver(){
   }
 }
 
+function resize() {
+  var height = window.innerHeight - 100;
+  var ratio = canvas.width/canvas.height;
+  var width = height * ratio;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+}
+window.addEventListener('load', resize, false);
+window.addEventListener('resize',resize,false);
+
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if(victoryCondition == false){ 
@@ -642,16 +652,8 @@ function draw(){
 
   window.requestAnimationFrame(draw);
 }
-function resize() {
-  var height = window.innerHeight - 100;
-  var ratio = canvas.width/canvas.height;
-  var width = height * ratio;
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
-}
-window.addEventListener('load', resize, false);
-window.addEventListener('resize',resize,false);
 
 
-
-    
+// function refresh(): void {
+//   window.location.reload();
+// }
