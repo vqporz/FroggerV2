@@ -114,7 +114,7 @@ var cMail = new Image(); cMail.src = "assets/closemail.png";
 var oMail = new Image(); oMail.src = "assets/openmail.png";
 
 
-var lives = 8;
+var lives = 3;
 var livesLost = 0;
 var play = true;
 var victoryCondition = false;
