@@ -188,7 +188,7 @@ function drawFrog(){
 }
 
 function moveFrog(){
-  if(move.upPressed == true && move.up == true && frog.yCoord >20){
+  if(move.upPressed == true && move.up == true && frog.yCoord > 20){
     frog.yCoord = frog.yCoord-44;
     move.up = false;
     frog.sx = 0;
@@ -230,8 +230,6 @@ function drawCars(){
   var carsSX = [myCar.carSX[0], myCar.carSX[1], myCar.carSX[2], myCar.carSX[3], myCar.carSX[4], myCar.carSX[5], myCar.carSX[6], myCar.carSX[7]];
   var carsX = [myCar.carX[0], myCar.carX[1], myCar.carX[2], myCar.carX[3], myCar.carX[4], myCar.carX[5], myCar.carX[6], myCar.carX[7]];
   var carsY = [myCar.carY[0], myCar.carY[1], myCar.carY[2], myCar.carY[3], myCar.carY[4], myCar.carY[5], myCar.carY[6], myCar.carY[7]];
-
- 
 
   for(var i = 0; i < carsX.length; i++){
     ctx.drawImage(car, carsSX[i], 0, 60, 35, carsX[i], carsY[i], myCar.carWidth, myCar.carHeight);
@@ -373,7 +371,6 @@ function runOver(){
 }
 
 function drawLogs(){
-  ctx.fillStyle = "tan";
   var logsX = [myLog.logX[0], myLog.logX[1], myLog.logX[2], myLog.logX[3], myLog.logX[4], myLog.logX[5], myLog.logX[6], myLog.logX[7]];
   var logsY = [myLog.logY[0], myLog.logY[1], myLog.logY[2], myLog.logY[3], myLog.logY[4], myLog.logY[5], myLog.logY[6], myLog.logY[7]];
   for(var i = 0; i < logsX.length; i++)
@@ -612,16 +609,11 @@ function gameOver(){
 
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
- 
-
-  if(victoryCondition == false){
-    
+  if(victoryCondition == false){ 
     gameOver();
     drawLives();
   }
-  
   if(play){
-    
     drawBackground();
     drawLives();
     drawLogs();
@@ -650,16 +642,15 @@ function draw(){
 
   window.requestAnimationFrame(draw);
 }
-
-function pause(numberMillis){
-  var now = new Date();
-  var exitTime = now.getTime() + numberMillis;
-  while(true){
-    now = new Date();
-    if(now.getTime() > exitTime)
-      return;
-  }
+function resize() {
+  var height = window.innerHeight - 100;
+  var ratio = canvas.width/canvas.height;
+  var width = height * ratio;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
 }
+window.addEventListener('load', resize, false);
+window.addEventListener('resize',resize,false);
 
 
     
